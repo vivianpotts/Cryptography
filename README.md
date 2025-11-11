@@ -13,7 +13,7 @@ Modules
 
 ## Main functionalities
 
-[Include snapshots of the user interactions with your app (with a brief description) to illustrate the app’s key functionalities.]
+The app "" main concept is to provide an interface in which users can create a secure username and password to log in and access encrypted data. The app is designed to serve users who require secure storage and retrieval of sensitive information. The main data flows include user registration, authentication, and data encryption/decryption processes. We establish peoples identities so they can then sign and authenticate their signatures for petitions. This stops the usage of fraudulent signatures and ensures that only authorized users can access and sign documents. The app stores user credentials and encrypted data, which need to be protected to maintain confidentiality and integrity.
 
 ## Byte-like/text-like data encoding/decoding
 
