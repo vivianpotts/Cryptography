@@ -1,6 +1,6 @@
 # Cryptography
 
-## Vivian Potts (100578802) & Sofia Wu
+## Vivian Potts (100578802) & Sophia Wu
 
 ## Code sharing option
 
@@ -13,48 +13,201 @@ Modules
 
 ## Main functionalities
 
-The app "" main concept is to provide an interface in which users can create a secure username and password to log in and access encrypted data. The app is designed to serve users who require secure storage and retrieval of sensitive information. The main data flows include user registration, authentication, and data encryption/decryption processes. We establish peoples identities so they can then sign and authenticate their signatures for petitions. This stops the usage of fraudulent signatures and ensures that only authorized users can access and sign documents. The app stores user credentials and encrypted data, which need to be protected to maintain confidentiality and integrity.
+This application implements a secure petition-signing system that allows users to:
+- Register with a password
+- Generate RSA key pairs
+- Produce a CSR 
+- Obtain an X.509 certificate signed by a local CA
+- Create petitions
+- Digitally sign petitions
+- Verify signatures
+The primary purpose is to authenticate users and validate petition signatures using digital signatures and certificates. This prevents fraudulent signatures and ensure the integrity of signed petitions.
+
+User Types
+- Regular users: register, obtain keys/certificates, create petitions, sign petitions
+- Certificate Authority - includes a mini PKI, so the CA is an internal role handled by scripts in /ca
+
+Main Data Flows
+User -> System:
+- Registration
+- CSR generation
+- Signing petitions
+System -> User:
+- Confirmation of authentication
+- Issued certificates
+- Signature verification results
 
 ## Byte-like/text-like data encoding/decoding
 
-[Specify how you deal with byte-like/text-like data. Include snapshots of the specific code functions you use to encode/decode byte-like/text-like data. List where and why in the app you apply this type of transformations. ]
+The application frequently converts between bytes and text formats because cryptographic material (keys, certs, signatures) is inherently byte-based.
+
+How Encoding/Decoding Is Handled
+- Base64 encoding/decoding — used to store binary data (salts, password hashes, AES enctypted blobs) inside JSON
+- PEM encoding — used to serialize RSA keys and X.509 certificates
+-UTF-8 text encoding — used for petition content and JSON structures
+
+Where Transformations Occur
+- During password hashing (salt + PBKDF2 outputs)
+- When storing encrypted private keys (AES-GCM output converted to Base64)
+- When loading PEM certificates
+- When creating signature files (raw bytes written to file)
 
 ## User authentication
 
-[Describe how users are registered and authenticated in the app. Describe how the app stores the user’s credentials and verifies them. Specify the cryptographic algorithm used and the reasons for choosing it. Include snapshots of the code, the content of the file/s (or database) that store the credentials and the interactions for user registration and authentication.]
+User authentication consists of:
+
+1. Registration
+- User provides username + password
+- System generates a random salt
+- Uses PBKDF2 (SHA-256) to derive a password hash
+Saves:
+    - salt
+    - pwd_hash
+    - RSA public key
+    - AES-GCM encrypted private key
+    - certificate (initially None)
+- Stored in JSON for easy retrieval
+
+2. Login
+- User enters credentials
+- Application recomputes PBKDF2 hash
+-Compares against stored hash
+- Grants access upon match
 
 ## Data encryption and authentication
 
-[Describe how data is encrypted and authenticated in the app. Describe how the app stores protected data. Specify the cryptographic algorithm used and the reasons for choosing it. Include snapshots of the code, the content of the file/s (or database) that store the encrypted data and the user interactions linked to the encryption/decryption of this data.]
+What Is Encrypted:
+- Private keys are encrypted before being stored.
+- Nothing else in the app requires symmetric encryption except protecting the user’s private RSA key.
+
+Algorithm
+- AES-GCM
+- Key is derived from user's password hash
+- Produces (nonce, ciphertext, tag) stored in JSON
+
+Why AES-GCM?
+- Provides confidentiality + integrity
+- Widely adopted and secure
+- Easy to store and recover due to AEAD construction
 
 ## Symmetric key management
 
-[List the types of cryptographic keys your app uses. Explain how key management is done (e.g., when keys are created, who creates the keys and how, who can access/use that key and how, whether key rotation is done,... Specify which algorithms are used to generate the keys (e.g., os.urandom or PBKDF2…). Include snapshots of the code, the content of the file/s (or database) that store the keys if they are stored, or any related data needed to use them. Include also snapshots of the user interactions linked to key creation/use if any (note that if these interactions are already described in previous sections you can just reference them from this section; there is no need to include duplicated snapshots).]
+Keys Used
+- AES-GCM keys for encrypting private keys
+- PBKDF2 password-derived keys for authentication and key wrapping
+
+How Keys Are Created
+- Salt generated via os.urandom()
+- PBKDF2-HMAC-SHA256 derives:
+    - stored password hash
+    - AES key for encrypting private RSA key
+
+Who Creates and Uses Keys
+- Keys are created locally on the user's machine during registration
+- Only the user can unlock their private key (by entering the password)
+
+Storage
+- AES-GCM encrypted blobs stored in users.json
+- Raw AES keys are never stored
 
 ## Asymmetric key management
 
-[Specify which users of the app have asymmetric keys. Describe when and how those users get their public/private key pair. Include snapshots of the specific code functions you use to create the keys. Specify what use the keys have in the app (digital signature, for encryption…?).]
+Every registered user automatically receives an RSA key pair.
+
+When & How Keys Are Generated
+- During registration
+Using:
+
+rsa.generate_private_key(
+    public_exponent=65537,
+    key_size=2048
+)
+
+Usage
+- Private key: sign petitions
+- Public key: included in CSR → certificate → used to verify signatures
 
 ## Loading and serializing asymmetric keys/public key certificates
 
-[Explain how the asymmetric keys and/or public key certificates are loaded and serialized in your app. Include snapshots of the code and the contents of the files and of the loaded cryptographic material (in readable format).]
+Loading Keys
+- Private keys decrypted from AES-GCM
+- Public keys loaded from stored PEM strings
+- Certificates loaded via x509.load_pem_x509_certificate()
+
+Serialization
+- Stored in PEM format
+- Certificates in readable Base64-encoded PEM blocks
+- Signatures stored as raw binary (.sig files)
+
+This allows portability and compatibility with common crypto tools (OpenSSL, browsers, etc.).
 
 ## Digital signatures
 
-[Describe what data is signed in the app, by who and when. Explain how the signed data, the signature and the cryptographic material needed to verify the signature is stored in files and in which format/encoding. Explain how the signature is verified. Include snapshots of the code and the interactions related to generate and verify the signature. Specify the algorithms used and justify the reasons for its selection.]
+What Is Signed
+- The petition text
+- Signed by the user’s RSA private key
+
+Process
+- Load petition text
+- Decrypt private key
+- Sign using:
+RSA + PSS padding + SHA-256
+- Save signature to /data/signatures/username_petition.sig
+
+Verification
+- System loads signer’s certificate
+- Extracts public key
+- Verifies signature using same PSS+SHA256 scheme
+- Only valid if:
+    - Certificate was issued by the CA
+    - Certificate signature is authentic
+    - Digital signature matches petition text
+
+This ensures integrity, authorship, and non-repudiation.
 
 ## Asymmetric encryption / hybrid encryption 
 
-[If it is the case, describe how asymmetric encryption is used in the app. Specify which data  is encrypted asymmetrically, by who and for whom. Specify the algorithm used and the reasons for its selection. Explain how asymmetric encryption helps your app to fulfill its purpose. Include snapshots of the code and the interactions related to the use of asymmetric keys for encryption and decryption.]
+This app does not use asymmetric encryption for confidentiality, only for authentication (digital signatures).
+The only encrypted data is the user’s private key encrypted symmetrically.
 
 ## Public key certificates and mini-PKI
 
-[Specify the type of public key certificates used in your app to authenticate the public keys (e.g., self-signed or issued by a mini-PKI). In any case, explain when and how certificates are created, including snapshots of the code, the user interactions (if any) related to its creation and use, and its contents in a readable format. In the case of having deployed a mini-PKI, you should also include a description of how you have deployed the mini-PKI including snapshots of the process and any related file/script you have used (you may include these files/scripts in the submission bundle).]
+Certificate Type
+- X.509 certificates
+- Issued by a local Certificate Authority included in /ca
+
+Mini-PKI Workflow
+- User generates CSR
+- CSR is sent to CA script
+- CA signs certificate using:
+    - Its private key (ac1.key.pem)
+    - Its certificate (ac1.cert.pem)
+- Certificate stored in users.json and in /data
+
+CA Files
+- Stored in /ca:
+    - ac1.key.pem — CA private key (protected in real systems)
+    - ac1.cert.pem — CA certificate
+    - serial, index.txt, openssl.cnf — maintain CA state
+
+Users trust the CA implicitly, forming a single-tier trust hierarchy.
 
 ## Other aspects
 
-[Include here any other aspect not related to the previous sections. Note that in the previous sections you may include other aspects related to the ones described but not specifically listed. This last section (or additional ones you need to add) is for OTHER aspects different from the ones described previously. ]
+App runs in terminal menu interface
+JSON-based storage for transparency
 
 ## Conclusions
 
-[Describe what you have learned and the main challenges you have faced to develop the app. Describe what you have enjoyed (if you have) and what you have suffered most. Analyze if developing the app has helped you to better understand  the topics addressed in the course. ]
+Through this project, we learned how real cryptographic systems operate end-to-end — from password hashing to PKI issuance and digital signatures. The biggest challenges were:
+- Ensuring correct private key encryption/decryption
+- Proper certificate signing and verification
+- Debugging serialization/byte-encoding issues
+- Getting the mini-PKI to work consistently
+
+We enjoyed seeing the entire workflow function correctly: users register, generate keys, get certified, sign a petition, and verify signatures — mirroring real-world digital identity systems. Building this app deepened our understanding of:
+- Public Key Infrastructure (PKI)
+- Digital signatures
+- RSA key management
+
+Overall, the project significantly improved our practical understanding of cryptography and secure system design.
