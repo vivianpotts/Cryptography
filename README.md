@@ -1,4 +1,5 @@
-# Cryptography
+# Society & Voice
+## Cryptography
 
 ## Vivian Potts (100578802) & Sophia Wu (100578325)
 
@@ -6,7 +7,15 @@
 
 Github - https://github.com/vivianpotts/Cryptography
 
-High-level description of the app
+<img width="422" height="418" alt="Screenshot 2025-12-14 at 4 33 30 PM" src="https://github.com/user-attachments/assets/17133cc8-21dd-4d67-9e53-c7d3dca1b095" />
+
+## Introduction:
+
+Society and Voice is a secure petition platform that allows individuals to create, sign, and verify petitions with confidence. Unlike traditional online petitions that rely solely on trust, Society and Voice ensures that every signature is authentic, tamper-proof, and verifiable using modern cryptographic techniques.
+The platform is designed to protect user identities while still guaranteeing the integrity of each petition. Every action—registration, petition creation, and signing—is backed by strong security mechanisms so that voices can be heard without compromising privacy or trust.
+At its core, Society and Voice demonstrates how real-world cryptography can be applied to civic engagement, ensuring that petitions truly represent the people who signed them!!
+
+## High-level description of the app
 
 This app is a command-line application demonstrating how cryptographic mechanisms such as hashing, authenticated key storage, PKI, certificate signing, and digital signatures can be integrated into a simple workflow. This simulates a scenario where users must authenticate themselves and produce verifiable cryptographic signatures.
 
