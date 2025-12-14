@@ -1,15 +1,34 @@
 # Cryptography
 
-## Vivian Potts (100578802) & Sophia Wu
+## Vivian Potts (100578802) & Sophia Wu (100578325)
 
 ## Code sharing option
 
 [Indicate whether you’ll share the code via the Google folder or through a GitHub repository. In the last case, specify here the url of the repository and make sure you grant access to the GitHub user linked to email aigonzal@inf.uc3m.es. ]
 High-level description of the app
-[Describe the application's primary purpose and its key functionalities. Identify the user types the app is designed to serve. Identify the main data flows (e.g., user-to-system, system-to-user, and user-to-user). Describe the data stored by the app and indicate which data should be protected.]
+This app is a command-line application demonstrating how cryptographic mechanisms such as hashing, authenticated key storage, PKI, certificate signing, and digital signatures can be integrated into a simple workflow. This simulates a scenario where users must authenticate themselves and produce verifiable cryptographic signatures.
 Technical description
+User -> System:
+- Register/Login
+- Create CSR
+- Request certificate
+- Create petition
+- Sign petition
+System -> User:
+- Confirms authentication
+- Issues certificates
+- Confirms signature validity
+Stored Data:
+users.json: password hashes, salts, encrypted private keys, public kets, certificates
+petitions.json: petition titles and text
+signatures/: signature files for each petition
+All private keys are encrypted using AES-GCM, and passwords are stored only as salted hashes.
 Modules
-[Describe how the different functionalities are distributed among the different Python scripts. It is highly recommended to include a graphical description besides a textual one.]
+main.py: Controls the menu and flow of the application. Routes the user's choices to teh correct module.
+user_management.py: Handles user registration, login, RSA key generation, private key encryption/decryption, and CSR Creation.
+pki_utils.py: Implements thte CA. Sings user CSRs to produce certificates and verifies certificates.
+petition_manager.py: Creates petitions, signs petitions user the user's private key, and verifies petition signatures using the certificate's public key. 
+crypto_utils.py: Provides low-level cryptographic helpers such as password hashing, AES-GCM encryption, and JSON load/save functions.
 
 ## Main functionalities
 
@@ -44,7 +63,7 @@ The application frequently converts between bytes and text formats because crypt
 How Encoding/Decoding Is Handled
 - Base64 encoding/decoding — used to store binary data (salts, password hashes, AES enctypted blobs) inside JSON
 - PEM encoding — used to serialize RSA keys and X.509 certificates
--UTF-8 text encoding — used for petition content and JSON structures
+- UTF-8 text encoding — used for petition content and JSON structures
 
 Where Transformations Occur
 - During password hashing (salt + PBKDF2 outputs)
@@ -71,7 +90,7 @@ Saves:
 2. Login
 - User enters credentials
 - Application recomputes PBKDF2 hash
--Compares against stored hash
+- Compares against stored hash
 - Grants access upon match
 
 ## Data encryption and authentication

@@ -10,7 +10,7 @@ CA_KEY = "ca/ac1.key.pem"
 CA_CERT = "ca/ac1.cert.pem"
 
 
-# ------- LOAD CA MATERIAL ------- #
+#LOAD CA MATERIAL
 
 def load_ca():
     with open(CA_KEY, "rb") as f:
@@ -20,7 +20,7 @@ def load_ca():
     return ca_key, ca_cert
 
 
-# ------- SIGN CSR TO ISSUE CERTIFICATE ------- #
+#SIGN CSR TO ISSUE CERTIFICATE
 
 def sign_user_csr(username, csr_path):
     ca_key, ca_cert = load_ca()
@@ -45,7 +45,7 @@ def sign_user_csr(username, csr_path):
     with open(cert_path, "wb") as f:
         f.write(pem_bytes)
         f.flush()
-        os.fsync(f.fileno())   # <-- forces complete write to disk
+        os.fsync(f.fileno())
 
 
     # store cert in users.json
@@ -56,7 +56,7 @@ def sign_user_csr(username, csr_path):
     return cert_path
 
 
-# ------- VERIFY CERTIFICATE ------- #
+#VERIFY CERTIFICATE
 
 def verify_user_certificate(username):
     users = load_users()

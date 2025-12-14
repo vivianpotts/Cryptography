@@ -21,7 +21,7 @@ def save_petitions(data):
     save_json(PETITIONS_FILE, data)
 
 
-# -------- CREATE PETITION -------- #
+#CREATE PETITION
 
 def create_petition(title, text):
     petitions = load_petitions()
@@ -38,7 +38,7 @@ def create_petition(title, text):
     return True, "Petition created."
 
 
-# -------- SIGN PETITION -------- #
+#SIGN PETITION
 
 def sign_petition(username, password, title):
     petitions = load_petitions()
@@ -75,7 +75,7 @@ def sign_petition(username, password, title):
     return True, "Signature applied."
 
 
-# -------- VERIFY PETITION SIGNATURE FOR A USER -------- #
+#VERIFY PETITION SIGNATURE FOR A USER
 
 def verify_signature(username, title):
     users = load_users()

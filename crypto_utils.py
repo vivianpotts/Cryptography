@@ -6,7 +6,7 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 
-# -------- PASSWORD HASHING -------- #
+#PASSWORD HASHING
 
 def hash_password(password: str, salt: bytes = None):
     """
@@ -58,7 +58,7 @@ def verify_password(stored_hash: bytes, provided_password: str, salt: bytes):
         return False
 
 
-# -------- AES-GCM AUTHENTICATED ENCRYPTION -------- #
+#AES-GCM AUTHENTICATED ENCRYPTION
 
 def encrypt_aes_gcm(key: bytes, plaintext: bytes):
     aesgcm = AESGCM(key)
@@ -78,7 +78,7 @@ def decrypt_aes_gcm(key: bytes, enc_dict: dict):
     return aesgcm.decrypt(nonce, ciphertext, None)
 
 
-# -------- JSON HELPERS -------- #
+#JSON HELPERS
 
 def load_json(path):
     if not os.path.exists(path):

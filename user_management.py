@@ -18,7 +18,7 @@ from cryptography.x509.oid import NameOID
 DATA_FILE = "data/users.json"
 
 
-# ------- LOAD / SAVE USERS ------- #
+# LOAD / SAVE USERS
 
 def load_users():
     return load_json(DATA_FILE)
@@ -28,7 +28,7 @@ def save_users(data):
     save_json(DATA_FILE, data)
 
 
-# ------- USER REGISTRATION ------- #
+#USER REGISTRATION
 
 def register_user(username, password):
     users = load_users()
@@ -74,7 +74,7 @@ def register_user(username, password):
     return True, "User registered successfully."
 
 
-# ------- USER LOGIN ------- #
+#USER LOGIN
 
 def authenticate_user(username, password):
     users = load_users()
@@ -90,14 +90,9 @@ def authenticate_user(username, password):
     return False, "Incorrect password."
 
 
-# ------- LOAD USER PRIVATE KEY ------- #
+#LOAD USER PRIVATE KEY
 
 def load_user_private_key(username, password):
-    """
-    Correct version:
-    Uses *derive_key()* to recreate the PBKDF2 key using the stored salt.
-    This matches the encryption key used during registration.
-    """
     users = load_users()
 
     salt = base64.b64decode(users[username]["salt"])
@@ -109,7 +104,7 @@ def load_user_private_key(username, password):
     return serialization.load_pem_private_key(key_pem, password=None)
 
 
-# ------- CREATE CSR ------- #
+#CREATE CSR
 
 def generate_csr(username, password):
     users = load_users()
