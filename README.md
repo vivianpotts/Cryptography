@@ -5,9 +5,13 @@
 ## Code sharing option
 
 Github - https://github.com/vivianpotts/Cryptography
+
 High-level description of the app
+
 This app is a command-line application demonstrating how cryptographic mechanisms such as hashing, authenticated key storage, PKI, certificate signing, and digital signatures can be integrated into a simple workflow. This simulates a scenario where users must authenticate themselves and produce verifiable cryptographic signatures.
+
 Technical description
+
 User -> System:
 - Register/Login
 - Create CSR
@@ -23,7 +27,9 @@ users.json: password hashes, salts, encrypted private keys, public kets, certifi
 petitions.json: petition titles and text
 signatures/: signature files for each petition
 All private keys are encrypted using AES-GCM, and passwords are stored only as salted hashes.
+
 Modules
+
 main.py: Controls the menu and flow of the application. Routes the user's choices to teh correct module.
 user_management.py: Handles user registration, login, RSA key generation, private key encryption/decryption, and CSR Creation.
 pki_utils.py: Implements thte CA. Sings user CSRs to produce certificates and verifies certificates.
