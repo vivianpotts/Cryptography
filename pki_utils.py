@@ -1,3 +1,5 @@
+'''Utility functions for Public Key Infrastructure (PKI) operations'''
+
 import os
 from cryptography import x509
 from cryptography.hazmat.primitives import serialization, hashes

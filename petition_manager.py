@@ -85,7 +85,6 @@ def sign_petition(username, password, title):
     return True, "Signature applied."
 
 
-# Function to verify a user's signature on a petition
 def verify_signature(username, title):
     '''Verify a user's signature on a petition'''
     users = load_users()
