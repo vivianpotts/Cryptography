@@ -198,24 +198,28 @@ The only encrypted data is the user’s private key encrypted symmetrically.
 ## Public key certificates and mini-PKI
 
 Certificate Type
-- X.509 certificates
-- Issued by a local Certificate Authority included in /ca
+-	X.509 certificates
+-	Issued following a two-level PKI hierarchy
 
 Mini-PKI Workflow
-- User generates CSR
-- CSR is sent to CA script
-- CA signs certificate using:
-    - Its private key (ac1.key.pem)
-    - Its certificate (ac1.cert.pem)
-- Certificate stored in users.json and in /data
+1.	A Root Certificate Authority (Root CA) is created as a self-signed trust anchor.
+2.	A subordinate Certificate Authority (AC1) is certified by the Root CA.
+3.	Users generate a CSR containing their public key.
+4.	The subordinate CA (AC1) signs user CSRs to issue user certificates.
+5.	Issued certificates are stored in users.json and in /data.
+This establishes a proper chain of trust:
+
+Root CA → Subordinate CA (AC1) → User Certificate
 
 CA Files
-- Stored in /ca:
-    - ac1.key.pem — CA private key (protected in real systems)
-    - ac1.cert.pem — CA certificate
-    - serial, index.txt, openssl.cnf — maintain CA state
+-	Stored in /ca:
+o	root/rootCA.cert.pem — Root CA public certificate (trust anchor)
+o	ac1.cert.pem — Subordinate CA certificate (signed by Root CA)
+o	ac1.key.pem — Subordinate CA private key (kept locally, not shared)
+o	serial, index.txt — maintain CA state
+The Root CA private key is intentionally not included in the repository to follow good security practices.
+Users implicitly trust the Root CA, and all certificates derive trust through this hierarchy.
 
-Users trust the CA implicitly, forming a single-tier trust hierarchy.
 
 ## Other aspects
 
