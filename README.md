@@ -4,7 +4,7 @@
 
 ## Code sharing option
 
-[Indicate whether you’ll share the code via the Google folder or through a GitHub repository. In the last case, specify here the url of the repository and make sure you grant access to the GitHub user linked to email aigonzal@inf.uc3m.es. ]
+Github - https://github.com/vivianpotts/Cryptography
 High-level description of the app
 This app is a command-line application demonstrating how cryptographic mechanisms such as hashing, authenticated key storage, PKI, certificate signing, and digital signatures can be integrated into a simple workflow. This simulates a scenario where users must authenticate themselves and produce verifiable cryptographic signatures.
 Technical description
