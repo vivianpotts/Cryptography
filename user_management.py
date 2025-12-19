@@ -30,7 +30,9 @@ def save_users(data):
 
 #USER REGISTRATION
 
+
 def register_user(username, password):
+    '''Register a new user with username and password'''
     users = load_users()
 
     if username in users:
@@ -59,7 +61,7 @@ def register_user(username, password):
         serialization.NoEncryption()
     )
 
-    enc_priv = encrypt_aes_gcm(pwd_hash, private_key_bytes)
+    enc_priv = encrypt_aes_gcm(hash_password, private_key_bytes)
 
     # Store user entry
     users[username] = {

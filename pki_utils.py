@@ -10,6 +10,8 @@ from user_management import load_users, save_users
 
 CA_KEY = "ca/ac1.key.pem"  # Path to the private key of the CA
 CA_CERT = "ca/ac1.cert.pem"  # Path to the certificate of the CA
+
+# ADDED PASSWORD TO PRODUCE CERTIFICATE!!
 CA_PASSWORD = "password"  # Password for the CA's private key (set to None if not password-protected)
 
 

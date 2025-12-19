@@ -7,7 +7,7 @@ from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
 from user_management import load_users, load_user_private_key
 from pki_utils import verify_user_certificate
-from crypto_utils import load_json, save_json
+from crypto_utils import load_json, save_json, hash_password
 from cryptography import x509
 
 # Constants for file paths
