@@ -10,6 +10,7 @@ from user_management import load_users, save_users
 
 CA_KEY = "ca/ac1.key.pem"  # Path to the private key of the CA
 CA_CERT = "ca/ac1.cert.pem"  # Path to the certificate of the CA
+CA_PASSWORD = "password"  # Password for the CA's private key (set to None if not password-protected)
 
 
 # LOAD CA MATERIAL
@@ -19,7 +20,7 @@ def load_ca():
 
     # The private key is used to sign certificates
     with open(CA_KEY, "rb") as f:
-        ca_key = serialization.load_pem_private_key(f.read(), password=None)
+        ca_key = serialization.load_pem_private_key(f.read(), password=CA_PASSWORD)
     # Load the CA's certificate from the specified file
     # The certificate contains the CA's public key and identity information
     with open(CA_CERT, "rb") as f:
